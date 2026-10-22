@@ -1,0 +1,1331 @@
+/* Keepsake Gallery: component styles
+   Tokens (colours, fonts, grain textures) live in index.css. */
+
+/* ---------- Keyframes ---------- */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes modalOut {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+  }
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) rotate(var(--tilt, 0deg));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--tilt, 0deg));
+  }
+}
+
+@keyframes heartPop {
+  0% {
+    transform: scale(0.8);
+  }
+  55% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ---------- App shell ---------- */
+
+.app {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow-x: clip;
+}
+
+.app__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: inherit;
+}
+
+/* Hold the search screen back while the envelope is still showing, then let it settle in. */
+.app--welcome .landing__intro,
+.app--welcome .landing__bar {
+  opacity: 0;
+}
+
+.app--revealed .landing__intro {
+  animation: fadeUp 0.8s var(--ease) 0.1s backwards;
+}
+
+.app--revealed .landing__bar {
+  animation: fadeUp 0.8s var(--ease) 0.3s backwards;
+}
+
+/* ---------- Botanical decorations (always behind the content) ---------- */
+
+.botanicals {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  color: var(--muted-burgundy);
+  opacity: 0.6;
+  transition: opacity 0.9s ease 0.2s;
+}
+
+.botanicals--subdued {
+  opacity: 0.32;
+}
+
+.app--welcome .botanicals {
+  opacity: 0;
+}
+
+.botanicals svg {
+  position: absolute;
+  display: block;
+  overflow: visible;
+}
+
+.botanicals__tl {
+  top: -12px;
+  left: -8px;
+  width: clamp(96px, 16vw, 230px);
+  transform: scaleY(-1);
+}
+
+.botanicals__br {
+  bottom: -12px;
+  right: -8px;
+  width: clamp(96px, 16vw, 230px);
+  transform: scaleX(-1);
+}
+
+.botanicals__tr {
+  top: clamp(8px, 2.5vw, 32px);
+  right: clamp(10px, 3vw, 40px);
+  width: clamp(56px, 8vw, 104px);
+  transform: scaleY(-1);
+}
+
+.botanicals__bl {
+  bottom: clamp(8px, 2.5vw, 32px);
+  left: clamp(10px, 3vw, 40px);
+  width: clamp(58px, 9vw, 112px);
+}
+
+@media (max-width: 640px) {
+  .botanicals__tr,
+  .botanicals__bl {
+    display: none;
+  }
+}
+
+/* ---------- Welcome screen: the envelope ---------- */
+
+.welcome {
+  --env-w: max(240px, min(86vw, 540px, calc((100svh - 240px) * 1.5)));
+
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: hidden;
+  background-color: var(--warm-ivory);
+  background-image:
+    var(--grain),
+    radial-gradient(90% 70% at 50% 40%, rgba(255, 255, 255, 0.65), transparent 70%),
+    radial-gradient(80% 60% at 100% 100%, rgba(232, 216, 208, 0.6), transparent 70%);
+  background-size: 200px 200px, auto, auto;
+  transition: opacity 0.5s ease;
+}
+
+.welcome--leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcome__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(24px, 5svh, 48px);
+  transition: transform 0.8s var(--ease);
+}
+
+/* The open flap rises above the envelope, so the whole scene drifts down a little to stay in view. */
+.welcome--opening .welcome__stage,
+.welcome--leaving .welcome__stage {
+  transform: translateY(calc(var(--env-w) * 0.14));
+}
+
+.welcome--leaving .welcome__stage {
+  transform: translateY(calc(var(--env-w) * 0.14 - 14px)) scale(1.03);
+}
+
+.envelope {
+  position: relative;
+  width: var(--env-w);
+  aspect-ratio: 3 / 2;
+  transform: rotate(-0.6deg); /* a hand-placed tilt */
+}
+
+.envelope::before {
+  content: '';
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -16px;
+  height: 28px;
+  background: radial-gradient(ellipse at center, rgba(53, 16, 25, 0.38), transparent 70%);
+  filter: blur(6px);
+}
+
+/* perspective lives here so the flap, a grandchild of .envelope, can swing in 3D */
+.envelope__art {
+  position: absolute;
+  inset: 0;
+  perspective: 1400px;
+}
+
+.envelope__art > div {
+  position: absolute;
+}
+
+/* The click and keyboard target sits above all the artwork */
+.envelope__hit {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.envelope__hit[aria-disabled='true'] {
+  cursor: default;
+}
+
+.envelope__hit:focus-visible {
+  outline: 3px solid var(--deep-burgundy);
+  outline-offset: 14px;
+}
+
+/* Stacking order: back 0 < letter 2 < pocket 3 < flap 4 (drops to 1 once open) < seal 5 */
+
+.env__back {
+  inset: 0;
+  z-index: 0;
+  border-radius: 3px;
+  background-color: var(--dark-wine);
+  background-image: var(--grain-light);
+  box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.45);
+}
+
+.env__letter {
+  left: 7%;
+  right: 7%;
+  top: 8%;
+  height: 92%;
+  z-index: 2;
+  border-radius: 2px 3px 2px 3px;
+  background-color: var(--paper);
+  background-image: var(--grain);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 2px 6px rgba(0, 0, 0, 0.25);
+  transform: rotate(-0.4deg);
+  transition: transform 0.8s cubic-bezier(0.3, 0.1, 0.2, 1) 0.6s;
+}
+
+/* faint ruled lines, like handwriting paper */
+.env__letter::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 44%;
+  height: 30%;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 11px,
+    rgba(135, 55, 71, 0.18) 11px 12px
+  );
+}
+
+.welcome:not(.welcome--closed) .env__letter {
+  transform: translateY(-36%) rotate(-1.2deg);
+}
+
+.env__letter-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: clamp(12px, 3.2vw, 22px) 12% 0;
+  text-align: center;
+  color: var(--deep-burgundy);
+}
+
+.env__sprig {
+  width: 42%;
+  color: var(--muted-burgundy);
+}
+
+.env__letter-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 4.4vw, 1.7rem);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.env__letter-sub {
+  font-size: clamp(0.56rem, 1.8vw, 0.7rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-burgundy);
+}
+
+/* Front of the envelope: sides and bottom, with a V-shaped opening at the top */
+.env__pocket {
+  inset: 0;
+  z-index: 3;
+  background-color: var(--deep-burgundy);
+  background-image: var(--grain-light);
+  clip-path: polygon(0 0, 50% 53%, 100% 0, 100% 100%, 0 100%);
+}
+
+.env__pocket::before,
+.env__pocket::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.env__pocket::before {
+  background: rgba(255, 255, 255, 0.06);
+  clip-path: polygon(0 0, 50% 53%, 0 100%);
+}
+
+.env__pocket::after {
+  background: rgba(0, 0, 0, 0.12);
+  clip-path: polygon(100% 0, 50% 53%, 100% 100%);
+}
+
+/* Soft shadow the closed flap casts onto the front; it fades as the flap lifts */
+.env__flap-shadow {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 55%;
+  z-index: 3;
+  filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.4));
+  transition: opacity 0.2s ease;
+}
+
+.env__flap-shadow > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--dark-wine);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.welcome:not(.welcome--closed) .env__flap-shadow {
+  opacity: 0;
+}
+
+/* The flap turns about its top edge. Front face is burgundy; the back face is a rose lining. */
+.env__flap {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 55%;
+  z-index: 4;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease;
+}
+
+.env__flap-face {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.env__flap-front {
+  background-color: var(--deep-burgundy);
+  background-image:
+    var(--grain-light), linear-gradient(to bottom, rgba(255, 255, 255, 0.07), rgba(0, 0, 0, 0.14));
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* Mirrored polygon: the face is turned 180° so it ends up the same shape as the front */
+.env__flap-back {
+  background-color: var(--dusty-rose);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 9px,
+    rgba(135, 55, 71, 0.14) 9px 10px
+  );
+  transform: rotateX(180deg);
+  clip-path: polygon(0 100%, 100% 100%, 50% 0);
+}
+
+/* Once open, the flap folds back behind the letter (z-index drops halfway through the swing) */
+.welcome:not(.welcome--closed) .env__flap {
+  z-index: 1;
+  transform: rotateX(180deg);
+  transition:
+    transform 0.8s cubic-bezier(0.45, 0.05, 0.25, 1) 0.15s,
+    z-index 0s linear 0.5s;
+}
+
+/* Wax-seal-inspired circle, slightly irregular */
+.env__seal {
+  left: 50%;
+  top: 55%;
+  width: 17%;
+  aspect-ratio: 1;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  color: rgba(247, 241, 232, 0.88);
+  border-radius: 52% 48% 55% 45% / 48% 54% 46% 52%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #a24558,
+    var(--muted-burgundy) 38%,
+    #6b2230 78%,
+    var(--deep-burgundy)
+  );
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.35),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.3),
+    inset 0 2px 3px rgba(255, 255, 255, 0.25);
+  transform: translate(-50%, -50%);
+  transition:
+    transform 0.35s ease,
+    opacity 0.3s ease;
+}
+
+.env__seal::before {
+  content: '';
+  position: absolute;
+  inset: 13%;
+  border-radius: inherit;
+  border: 1.5px solid rgba(247, 241, 232, 0.32);
+}
+
+.env__seal svg {
+  position: relative;
+  width: 56%;
+  height: 56%;
+}
+
+.welcome:not(.welcome--closed) .env__seal {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.55) rotate(-8deg);
+}
+
+/* A small peek when hovering a mouse; touch and keyboard users are not affected */
+@media (hover: hover) {
+  .welcome--closed .envelope:hover .env__flap {
+    transform: rotateX(9deg);
+  }
+
+  .welcome--closed .envelope:hover .env__seal {
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+
+.welcome__hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  transition: opacity 0.35s ease;
+}
+
+.welcome__hint-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 5vw, 1.9rem);
+  font-style: italic;
+  color: var(--deep-burgundy);
+}
+
+.welcome__hint-sub {
+  font-size: 0.74rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-burgundy);
+}
+
+.welcome:not(.welcome--closed) .welcome__hint {
+  opacity: 0;
+}
+
+/* ---------- Search landing / compact header ---------- */
+
+.landing {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: clamp(20px, 4vw, 48px) var(--gutter);
+  text-align: center;
+  transition:
+    min-height 0.75s var(--ease),
+    padding 0.75s var(--ease);
+}
+
+/* After a search the header shrinks, so the centred search bar glides up to the top */
+.landing--compact {
+  min-height: 0;
+  padding-top: clamp(18px, 3vw, 32px);
+  padding-bottom: 4px;
+}
+
+.landing__intro {
+  max-width: 36rem;
+  max-height: 30rem;
+  margin-bottom: clamp(22px, 4vh, 34px);
+  padding: 4px 0;
+  overflow: hidden;
+  transition:
+    max-height 0.75s var(--ease),
+    margin 0.75s var(--ease),
+    opacity 0.45s ease,
+    transform 0.75s var(--ease);
+}
+
+.landing--compact .landing__intro {
+  max-height: 0;
+  margin-bottom: 0;
+  padding: 0;
+  opacity: 0;
+  transform: translateY(-14px);
+  pointer-events: none;
+}
+
+.landing__kicker {
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted-burgundy);
+}
+
+.landing__title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 7.5vw, 4.4rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--deep-burgundy);
+}
+
+.landing__title em {
+  font-style: italic;
+  color: var(--muted-burgundy);
+}
+
+.landing__scribble {
+  display: block;
+  width: min(220px, 50%);
+  margin: 4px auto 14px;
+  color: var(--champagne-gold);
+}
+
+.landing__lede {
+  max-width: 30rem;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  color: rgba(48, 36, 38, 0.85);
+}
+
+.landing__notice {
+  margin: 18px auto 0;
+  max-width: 32rem;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: var(--dark-wine);
+  background: rgba(232, 216, 208, 0.7);
+  border: 1px dashed var(--muted-burgundy);
+  border-radius: 8px 12px 9px 13px;
+}
+
+.landing__notice code {
+  padding: 1px 5px;
+  font-size: 0.85em;
+  background: rgba(247, 241, 232, 0.9);
+  border-radius: 4px;
+}
+
+.landing__intro .linkbtn {
+  margin-top: 14px;
+}
+
+.landing__bar {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  max-width: 640px;
+  transition: max-width 0.75s var(--ease);
+}
+
+.landing--compact .landing__bar {
+  max-width: 860px;
+}
+
+/* ---------- Search bar ---------- */
+
+.searchbar {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.searchbar__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 18px;
+  background-color: var(--paper);
+  background-image: var(--grain);
+  border: 1.5px solid var(--muted-burgundy);
+  border-radius: 16px 20px 17px 21px / 20px 16px 21px 17px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 10px 24px -14px rgba(53, 16, 25, 0.45);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.searchbar__field:focus-within {
+  border-color: var(--deep-burgundy);
+  outline: 2px solid var(--deep-burgundy);
+  outline-offset: 3px;
+}
+
+.searchbar__icon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  color: var(--deep-burgundy);
+}
+
+.searchbar__input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 4px;
+  font-size: 1.15rem;
+  color: var(--espresso);
+  background: transparent;
+  border: 0;
+  outline: none;
+  transition:
+    font-size 0.75s var(--ease),
+    padding 0.75s var(--ease);
+}
+
+.searchbar__input::placeholder {
+  color: rgba(48, 36, 38, 0.68);
+}
+
+.landing--compact .searchbar__input {
+  padding: 8px 4px;
+  font-size: 1rem;
+}
+
+.searchbar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--warm-ivory);
+  background: var(--deep-burgundy);
+  border: 0;
+  border-radius: 12px 14px 12px 15px / 14px 12px 15px 12px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.searchbar__btn:hover {
+  background: var(--dark-wine);
+}
+
+.searchbar__btn:active {
+  transform: translateY(1px);
+}
+
+.searchbar__btn:focus-visible {
+  outline-offset: 2px;
+}
+
+.searchbar__btn-icon {
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+
+.spinner {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(247, 241, 232, 0.4);
+  border-top-color: var(--warm-ivory);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.searchbar__hint {
+  position: absolute;
+  top: 100%;
+  left: 18px;
+  z-index: 3;
+  margin-top: 8px;
+  font-size: 0.88rem;
+  color: var(--muted-burgundy);
+}
+
+/* ---------- Favourites control and text buttons ---------- */
+
+.favbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--deep-burgundy);
+  background: transparent;
+  border: 1.5px solid var(--deep-burgundy);
+  border-radius: 14px 17px 15px 18px / 17px 14px 18px 15px;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.favbtn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.favbtn:hover {
+  background: rgba(232, 216, 208, 0.6);
+}
+
+.favbtn[aria-pressed='true'] {
+  color: var(--warm-ivory);
+  background: var(--deep-burgundy);
+}
+
+.favbtn[aria-pressed='true'] svg {
+  fill: currentColor;
+}
+
+.favbtn__count {
+  display: grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 6px;
+  font-size: 0.78rem;
+  color: var(--deep-burgundy);
+  background: var(--dusty-rose);
+  border-radius: 999px;
+}
+
+.linkbtn {
+  padding: 6px 2px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--deep-burgundy);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.linkbtn:hover {
+  color: var(--muted-burgundy);
+}
+
+.btn {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 12px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--warm-ivory);
+  background: var(--deep-burgundy);
+  border: 0;
+  border-radius: 12px 14px 12px 15px / 14px 12px 15px 12px;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+  background: var(--dark-wine);
+}
+
+/* ---------- Gallery ---------- */
+
+.gallery {
+  flex: 1;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 32px) var(--gutter) 80px;
+  animation: fadeUp 0.6s var(--ease) 0.35s backwards;
+}
+
+.gallery__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 20px;
+  margin-bottom: clamp(18px, 3vw, 28px);
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(135, 55, 71, 0.4);
+}
+
+.gallery__title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.7rem, 3.6vw, 2.3rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--deep-burgundy);
+}
+
+.gallery__title em {
+  font-style: italic;
+  color: var(--muted-burgundy);
+}
+
+.gallery__meta {
+  margin-top: 2px;
+  min-height: 1.5em;
+  font-size: 0.92rem;
+  color: var(--muted-burgundy);
+}
+
+.gallery__credit {
+  margin-top: clamp(32px, 6vw, 56px);
+  font-size: 0.85rem;
+  text-align: center;
+  color: rgba(48, 36, 38, 0.72);
+}
+
+/* ---------- Empty, error and loading states ---------- */
+
+.state {
+  max-width: 34rem;
+  margin: clamp(24px, 6vw, 56px) auto;
+  padding: 32px 24px;
+  text-align: center;
+  background-color: var(--paper);
+  background-image: var(--grain);
+  border: 1px dashed var(--muted-burgundy);
+  border-radius: 6px 10px 7px 11px;
+  box-shadow: 0 14px 30px -20px rgba(53, 16, 25, 0.5);
+}
+
+.state__sprig {
+  width: 110px;
+  margin: 0 auto 8px;
+  color: var(--muted-burgundy);
+}
+
+.state__title {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: var(--deep-burgundy);
+}
+
+.state__text {
+  margin-top: 8px;
+  color: rgba(48, 36, 38, 0.88);
+}
+
+/* ---------- Photo grid ---------- */
+
+.photo-grid,
+.skeleton-grid {
+  --gap: clamp(12px, 2vw, 22px);
+
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  column-gap: var(--gap);
+}
+
+@media (min-width: 760px) {
+  .photo-grid,
+  .skeleton-grid {
+    columns: 3;
+  }
+}
+
+@media (min-width: 1100px) {
+  .photo-grid,
+  .skeleton-grid {
+    columns: 4;
+  }
+}
+
+.photo-card {
+  position: relative;
+  margin: 0 0 var(--gap);
+  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.25s var(--ease);
+  animation: cardIn 0.55s var(--ease) calc(min(var(--i, 0), 12) * 45ms + 60ms) backwards;
+}
+
+/* Every fifth card gets a strip of washi tape, like a scrapbook page */
+.photo-card:nth-child(5n + 2)::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  z-index: 1;
+  width: 54px;
+  height: 16px;
+  background: rgba(198, 164, 106, 0.55);
+  clip-path: polygon(0 10%, 6% 0, 12% 12%, 18% 0, 82% 0, 88% 12%, 94% 0, 100% 10%, 100% 90%, 94% 100%, 88% 88%, 82% 100%, 18% 100%, 12% 88%, 6% 100%, 0 90%);
+  transform: translateX(-50%) rotate(-3deg);
+  pointer-events: none;
+}
+
+.photo-card__open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: zoom-in;
+}
+
+.photo-card__open:focus-visible {
+  outline-offset: 4px;
+}
+
+.photo-card__frame {
+  display: block;
+  padding: 8px;
+  background-color: var(--paper);
+  background-image: var(--grain);
+  border-radius: 2px 3px 2px 4px;
+  box-shadow:
+    0 1px 2px rgba(53, 16, 25, 0.14),
+    0 10px 18px -10px rgba(53, 16, 25, 0.38);
+  transition: box-shadow 0.25s ease;
+}
+
+.photo-card__media {
+  position: relative;
+  display: block;
+  aspect-ratio: var(--ratio, 1.2);
+  overflow: hidden;
+  background-color: var(--dusty-rose);
+}
+
+.photo-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition:
+    opacity 0.45s ease,
+    transform 0.5s var(--ease);
+}
+
+.photo-card__media.is-loaded img {
+  opacity: 1;
+}
+
+.photo-card__media.is-failed {
+  display: grid;
+  place-items: center;
+  background-color: var(--dusty-rose) !important;
+}
+
+.photo-card__fallback {
+  padding: 12px;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--dark-wine);
+}
+
+/* Hover is a small extra: nothing depends on it */
+@media (hover: hover) {
+  .photo-card:hover {
+    transform: rotate(0deg) translateY(-3px);
+  }
+
+  .photo-card:hover .photo-card__frame {
+    box-shadow:
+      0 2px 3px rgba(53, 16, 25, 0.16),
+      0 16px 24px -12px rgba(53, 16, 25, 0.45);
+  }
+
+  .photo-card:hover .photo-card__media img {
+    transform: scale(1.025);
+  }
+}
+
+/* Loading placeholders */
+.skeleton-card {
+  margin: 0 0 var(--gap);
+  padding: 8px;
+  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
+  background-color: var(--paper);
+  border-radius: 2px 3px 2px 4px;
+  box-shadow: 0 8px 16px -12px rgba(53, 16, 25, 0.35);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.skeleton-card > span {
+  display: block;
+  aspect-ratio: var(--ratio, 1);
+  background: var(--dusty-rose);
+}
+
+/* ---------- Favourite heart ---------- */
+
+.heart {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  color: var(--deep-burgundy);
+  background: rgba(251, 247, 240, 0.92);
+  border: 1px solid rgba(90, 23, 37, 0.25);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(53, 16, 25, 0.25);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.heart svg {
+  width: 20px;
+  height: 20px;
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  transition: fill 0.2s ease;
+}
+
+.heart:active {
+  transform: scale(0.92);
+}
+
+.heart[aria-pressed='true'] {
+  color: var(--warm-ivory);
+  background: var(--deep-burgundy);
+  border-color: var(--deep-burgundy);
+}
+
+.heart[aria-pressed='true'] svg {
+  fill: currentColor;
+}
+
+.heart--pop svg {
+  animation: heartPop 0.38s var(--ease);
+}
+
+.heart--inline {
+  position: static;
+  flex: none;
+}
+
+/* ---------- Photo preview modal ---------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(18px, 3vw, 32px);
+  background: rgba(53, 16, 25, 0.66);
+  -webkit-backdrop-filter: blur(10px) saturate(0.85);
+  backdrop-filter: blur(10px) saturate(0.85);
+  animation: fadeIn 0.25s ease both;
+}
+
+.modal--closing {
+  animation: fadeOut 0.2s ease forwards;
+}
+
+.modal__dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: min(100%, 1100px);
+  max-height: 100%;
+  padding: clamp(8px, 1.5vw, 14px);
+  background-color: var(--paper);
+  background-image: var(--grain);
+  border-radius: 3px 5px 3px 6px;
+  box-shadow:
+    0 30px 70px -20px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(232, 216, 208, 0.5);
+  animation: modalIn 0.3s var(--ease) both;
+}
+
+.modal--closing .modal__dialog {
+  animation: modalOut 0.2s var(--ease) forwards;
+}
+
+.modal__close {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: var(--warm-ivory);
+  background: var(--deep-burgundy);
+  border: 2px solid var(--warm-ivory);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  transition: background-color 0.2s ease;
+}
+
+.modal__close:hover {
+  background: var(--dark-wine);
+}
+
+.modal__close:focus-visible {
+  outline-color: var(--champagne-gold);
+}
+
+.modal__close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.modal__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  background-color: var(--dusty-rose);
+}
+
+/* Both limits together keep the photo's aspect ratio and fit it inside the viewport */
+.modal__img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 230px);
+  max-height: calc(100svh - 230px);
+  object-fit: contain;
+}
+
+.modal__fallback {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--dark-wine);
+}
+
+/* width 0 + min-width 100%: a long caption can never make the dialog wider than the photo */
+.modal__caption {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 0;
+  min-width: 100%;
+  padding: 14px 6px 4px;
+}
+
+.modal__caption-text {
+  min-width: 0;
+}
+
+.modal__title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--deep-burgundy);
+  overflow-wrap: anywhere;
+}
+
+.modal__credit {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: rgba(48, 36, 38, 0.85);
+}
+
+.modal__credit a {
+  color: var(--deep-burgundy);
+  text-underline-offset: 3px;
+}
+
+/* ---------- Responsive adjustments ---------- */
+
+@media (max-width: 560px) {
+  .favbtn__label {
+    display: none;
+  }
+
+  .favbtn {
+    padding: 0 14px;
+  }
+
+  .landing__bar {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .searchbar__field {
+    gap: 8px;
+    padding-left: 14px;
+  }
+
+  .searchbar__btn {
+    padding: 0 12px;
+  }
+
+  .searchbar__btn-label {
+    display: none;
+  }
+
+  .searchbar__btn-icon {
+    display: block;
+  }
+
+  .searchbar__input {
+    font-size: 1rem;
+  }
+
+  .heart {
+    top: 14px;
+    right: 14px;
+  }
+
+  .modal__close {
+    top: -12px;
+    right: -12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .landing__title {
+    font-size: 2.3rem;
+  }
+}

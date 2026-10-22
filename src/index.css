@@ -1,0 +1,117 @@
+/* Keepsake Gallery: global tokens and base styles */
+
+:root {
+  /* Palette */
+  --deep-burgundy: #5a1725;
+  --dark-wine: #351019;
+  --muted-burgundy: #873747;
+  --warm-ivory: #f7f1e8;
+  --dusty-rose: #e8d8d0;
+  --champagne-gold: #c6a46a;
+  --espresso: #302426;
+
+  /* A slightly lighter ivory for paper cards (derived from warm ivory) */
+  --paper: #fbf7f0;
+
+  /* Typography */
+  --font-serif: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Motion and layout */
+  --ease: cubic-bezier(0.33, 0.08, 0.2, 1);
+  --gutter: clamp(16px, 4vw, 40px);
+
+  /* Paper grain (inline SVG noise: dark speckle for light paper, light speckle for burgundy) */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .33 0 0 0 0 .2 0 0 0 0 .2 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .96 0 0 0 0 .9 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Keeps layout steady when the modal hides the page scrollbar */
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--espresso);
+  background-color: var(--warm-ivory);
+  background-image:
+    var(--grain),
+    radial-gradient(110% 70% at 50% -10%, rgba(255, 255, 255, 0.6), transparent 60%),
+    radial-gradient(80% 60% at 100% 100%, rgba(232, 216, 208, 0.5), transparent 70%);
+  background-size: 200px 200px, auto, auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  max-width: 100%;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--deep-burgundy);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--dusty-rose);
+  color: var(--dark-wine);
+}
+
+/* Visually hidden, still available to screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Reduced motion: keep every action working, drop the movement */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
