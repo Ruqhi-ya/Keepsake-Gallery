@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 const STORAGE_KEY = 'keepsake-gallery.favourites.v1';
 
-// Only these fields are stored: the minimum needed to render a saved photo.
 function toStoredPhoto(photo) {
   return {
     id: photo.id,
@@ -30,44 +30,81 @@ function isValidPhoto(photo) {
   );
 }
 
-// Reads saved favourites; corrupt or unexpected data falls back to an empty list.
 function readStoredFavourites() {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
+
     if (!raw) return [];
+
     const data = JSON.parse(raw);
+
     if (!Array.isArray(data)) return [];
 
     const seen = new Set();
+
     return data
-      .filter((photo) => isValidPhoto(photo) && !seen.has(photo.id) && seen.add(photo.id))
+      .filter(
+        (photo) =>
+          isValidPhoto(photo) &&
+          !seen.has(photo.id) &&
+          seen.add(photo.id)
+      )
       .map(toStoredPhoto);
   } catch {
     return [];
   }
 }
 
-export default function useFavourites() {
-  const [favourites, setFavourites] = useState(readStoredFavourites);
+// useReducer manages changes to the favourites list.
+function favouritesReducer(state, action) {
+  switch (action.type) {
+    case 'TOGGLE': {
+      const alreadyFavourite = state.some(
+        (photo) => photo.id === action.photo.id
+      );
 
-  // Persist after every change. Storage can fail (private mode, quota), so ignore errors.
+      if (alreadyFavourite) {
+        return state.filter(
+          (photo) => photo.id !== action.photo.id
+        );
+      }
+
+      return [toStoredPhoto(action.photo), ...state];
+    }
+
+    default:
+      return state;
+  }
+}
+
+export default function useFavourites() {
+  const [favourites, dispatch] = useReducer(
+    favouritesReducer,
+    undefined,
+    readStoredFavourites
+  );
+
+  // Save favourites whenever the list changes.
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(favourites));
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(favourites)
+      );
     } catch {
-      // The session still works; favourites just will not survive a refresh.
+      // The app can still work if storage is unavailable.
     }
   }, [favourites]);
 
-  const favouriteIds = useMemo(() => new Set(favourites.map((photo) => photo.id)), [favourites]);
+  // Quickly check whether a photo is a favourite.
+  const favouriteIds = useMemo(
+    () => new Set(favourites.map((photo) => photo.id)),
+    [favourites]
+  );
 
-  // Newest favourite first. Stable identity so memoised cards do not re-render.
+  // Dispatch an action to add or remove a favourite.
   const toggleFavourite = useCallback((photo) => {
-    setFavourites((current) =>
-      current.some((item) => item.id === photo.id)
-        ? current.filter((item) => item.id !== photo.id)
-        : [toStoredPhoto(photo), ...current],
-    );
+    dispatch({ type: 'TOGGLE', photo });
   }, []);
 
   return { favourites, favouriteIds, toggleFavourite };
